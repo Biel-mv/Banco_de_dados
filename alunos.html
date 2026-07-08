@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Alunos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+    <div class="container mt-5">
+        <div class="mb-4">
+            <a href="/" class="btn btn-dark px-3">← Painel</a>
+        </div>
+        
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="m-0 fw-semibold">
+                    {% if aluno_edicao %}Editar Dados do Aluno{% else %}Matricular aluno{% endif %}
+                </h5>
+            </div>
+            <div class="card-body bg-white">
+                <form action="{% if aluno_edicao %}/alunos/editar/{{ aluno_edicao.id }}{% if search_query %}?search={{ search_query }}{% endif %}{% else %}/alunos{% endif %}" method="POST" class="row g-3">
+                    
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Matrícula</label>
+                        <input type="text" name="matricula" class="form-control" placeholder="Ex: 20260101001" maxlength="11" minlength="11" pattern="2026[0-9]{7}" inputmode="numeric" title="A matrícula deve começar com 2026 e ter exatamente 11 dígitos numéricos." value="{% if aluno_edicao %}{{ aluno_edicao.matricula }}{% endif %}" required>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Nome</label>
+                        <input type="text" name="nome" class="form-control" placeholder="Nome e sobrenome" pattern="[A-Za-zÀ-ÿ]+(\s[A-Za-zÀ-ÿ]+)+" title="Insira o nome e ao menos um sobrenome (apenas letras)." value="{% if aluno_edicao %}{{ aluno_edicao.nome }}{% endif %}" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Data de Nascimento</label>
+                        <input type="date" name="data_nascimento" class="form-control" value="{% if aluno_edicao %}{{ aluno_edicao.data_nascimento }}{% endif %}" required>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Curso</label>
+                        <input type="text" name="curso" class="form-control" placeholder="Curso" pattern="^[A-Za-zÀ-ÿ].*" title="O nome do curso deve começar com letras." value="{% if aluno_edicao %}{{ aluno_edicao.curso }}{% endif %}" required>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">E-mail</label>
+                        <input type="email" name="email" class="form-control" placeholder="exemplo@email.com" value="{% if aluno_edicao %}{{ aluno_edicao.email or '' }}{% endif %}">
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        {% if aluno_edicao %}
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">Atualizar</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-dark w-100 fw-bold">Salvar</button>
+                        {% endif %}
+                    </div>
+                </form>
+                
+                {% if aluno_edicao %}
+                <div class="mt-2 text-end">
+                    <a href="/alunos{% if search_query %}?search={{ search_query }}{% endif %}" class="small text-muted text-decoration-none">❌ Cancelar Edição</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-5">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="m-0 fw-semibold">Alunos cadastrados</h5>
+                
+                <form action="{% if aluno_edicao %}/alunos/editar/{{ aluno_edicao.id }}{% else %}/alunos{% endif %}" method="GET" class="d-flex gap-2" style="max-width: 350px;">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Buscar" value="{{ search_query or '' }}">
+                    <button type="submit" class="btn btn-light btn-sm fw-bold">🔍</button>
+                    {% if search_query %}
+                        <a href="{% if aluno_edicao %}/alunos/editar/{{ aluno_edicao.id }}{% else %}/alunos{% endif %}" class="btn btn-secondary btn-sm text-decoration-none">❌</a>
+                    {% endif %}
+                </form>
+            </div>
+            
+            <div class="card-body bg-white p-0">
+                <table class="table table-hover align-middle m-0 w-100">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Matrícula</th>
+                            <th>Nome</th>
+                            <th>Idade</th>
+                            <th>Curso</th>
+                            <th>E-mail</th>
+                            <th class="text-center pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in alunos %}
+                        <tr {% if aluno_edicao and aluno_edicao.id == a.id %}class="table-warning"{% endif %}>
+                            <td class="ps-4">{{ a.id }}</td>
+                            <td>{{ a.matricula }}</td>
+                            <td>{{ a.nome }}</td>
+                            <td>{% if a.idade is not none %}{{ a.idade }} anos{% else %}-{% endif %}</td>
+                            <td>{{ a.curso }}</td>
+                            <td>{{ a.email or '-' }}</td>
+                            <td class="text-center pe-4">
+                                <a href="/alunos/editar/{{ a.id }}{% if search_query %}?search={{ search_query }}{% endif %}" class="btn btn-link text-primary btn-sm text-decoration-none fw-bold me-2">✏️ Editar</a>
+                                <a href="/alunos/deletar/{{ a.id }}" class="btn btn-link text-danger btn-sm text-decoration-none fw-bold" onclick="return confirm('Tem certeza que deseja excluir este aluno?')">🗑️ Excluir</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">Nenhum aluno encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

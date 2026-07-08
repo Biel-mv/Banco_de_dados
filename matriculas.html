@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrículas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+    <div class="container mt-5">
+        <div class="mb-4"><a href="/" class="btn btn-dark px-3">← Painel</a></div>
+        
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="m-0 fw-semibold">
+                    {% if matricula_edicao %}Editar vínculo de Matrícula{% else %}Vincular aluno a uma disciplina{% endif %}
+                </h5>
+            </div>
+            <div class="card-body bg-white">
+                <form action="{% if matricula_edicao %}/matriculas/editar/{{ matricula_edicao.id }}{% else %}/matriculas{% endif %}" method="POST" class="row g-3">
+                    
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Selecione o aluno:</label>
+                        <select name="aluno_id" class="form-select" required>
+                            {% for a in alunos %}
+                                <option value="{{ a.id }}" {% if matricula_edicao and matricula_edicao.aluno_id == a.id %}selected{% endif %}>
+                                    {{ a.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Matéria:</label>
+                        <select name="disciplina_id" class="form-select" required>
+                            {% for d in disciplinas %}
+                                <option value="{{ d.id }}" {% if matricula_edicao and matricula_edicao.disciplina_id == d.id %}selected{% endif %}>
+                                    {{ d.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        {% if matricula_edicao %}
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">Atualizar</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-dark w-100 fw-bold">Matricular</button>
+                        {% endif %}
+                    </div>
+                </form>
+                {% if matricula_edicao %}
+                <div class="mt-2 text-end">
+                    <a href="/matriculas" class="small text-muted text-decoration-none">❌ Cancelar Edição</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3"><h5 class="m-0 fw-semibold">Matriculados</h5></div>
+            <div class="card-body bg-white p-0">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Aluno</th>
+                            <th>Disciplina</th>
+                            <th class="text-center pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in matriculas %}
+                        <tr {% if matricula_edicao and matricula_edicao.id == m.id %}class="table-warning"{% endif %}>
+                            <td class="ps-4 fw-semibold">{{ m.aluno }}</td>
+                            <td>{{ m.disciplina }}</td>
+                            <td class="text-center pe-4">
+                                <a href="/matriculas/editar/{{ m.id }}" class="btn btn-link text-primary btn-sm text-decoration-none fw-bold me-2">✏️ Editar</a>
+                                <a href="/matriculas/deletar/{{ m.id }}" class="btn btn-link text-dark btn-sm text-decoration-none fw-bold">🗑️ Apagar matrícula</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

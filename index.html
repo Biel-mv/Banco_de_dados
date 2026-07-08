@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento acadêmico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+    <div class="container mt-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold m-0">Gerenciamento acadêmico</h2>
+            <div>
+                <a href="/alunos" class="btn btn-dark px-3 me-2">Matrículas</a>
+                <a href="/disciplinas" class="btn btn-dark px-3 me-2">Disciplinas</a>
+                <a href="/matriculas" class="btn btn-dark px-3 me-2">Inscrever em disciplina</a>
+                <a href="/atividades" class="btn btn-dark px-3 me-2">Atividades</a>
+                <a href="/notas" class="btn btn-dark px-3">Notas</a>
+            </div>
+        </div>
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="m-0 fw-semibold text-white">1. Desempenho por atividade</h5>
+            </div>
+            <div class="card-body bg-white p-0">
+                <table class="table table-hover align-middle m-0 table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Aluno</th>
+                            <th>Matéria</th>
+                            <th>Atividade</th>
+                            <th>Nota</th>
+                            <th class="text-center pe-4">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in boletim %}
+                        <tr>
+                            <td class="ps-4">{{ b.aluno }}</td>
+                            <td>{{ b.disciplina }}</td>
+                            <td>{{ b.atividade }}</td>
+                            <td class="fw-bold {% if b.media_aluno >= 6.0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ b.media_aluno|br_nota }}
+                            </td>
+                            <td class="text-center pe-4">
+                                <a href="/notas/excluir/{{ b.entrega_id }}" class="btn btn-link text-danger btn-sm text-decoration-none fw-bold" onclick="return confirm('Tem certeza que deseja apagar esta nota?')">Remover nota</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h5 class="m-0 fw-semibold text-white">2. Alunos com nota menor que 6</h5>
+                    </div>
+                    <div class="card-body bg-white p-0">
+                        <table class="table table-hover align-middle m-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Aluno</th>
+                                    <th>Atividade</th>
+                                    <th class="pe-4">Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in risco %}
+                                <tr>
+                                    <td class="ps-4">{{ r.aluno }}</td>
+                                    <td>{{ r.atividade }}</td>
+                                    <td class="text-danger fw-bold pe-4">{{ r.nota|br_nota }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3 text-muted">🎉 Nenhum aluno com nota menor que 6!</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h5 class="m-0 fw-semibold text-white">3. Alunos sem atividades registradas</h5>
+                    </div>
+                    <div class="card-body bg-white p-0">
+                        <div class="list-group list-group-flush">
+                            {% for i in inadimplentes %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                                <span>{{ i.nome }}</span>
+                                <span class="badge bg-secondary rounded-pill">Matrícula: {{ i.matricula }}</span>
+                            </div>
+                            {% else %}
+                            <div class="p-4 text-center text-muted">🎉 Todos os alunos possuem notas registradas!</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> </body>
+</html>

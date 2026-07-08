@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar disciplinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark">
+    <div class="container mt-5">
+        <div class="mb-4"><a href="/" class="btn btn-dark px-3">← Painel</a></div>
+        
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="m-0 fw-semibold">
+                    {% if disciplina_edicao %}Editar Disciplina{% else %}Nova disciplina{% endif %}
+                </h5>
+            </div>
+            <div class="card-body bg-white">
+                <form action="{% if disciplina_edicao %}/disciplinas/editar/{{ disciplina_edicao.id }}{% else %}/disciplinas{% endif %}" method="POST" class="row g-2 align-items-end">
+                    
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Nome da disciplina</label>
+                        <input type="text" name="nome" class="form-control" placeholder="Ex: Cálculo I" pattern="^[^\d].*" title="O nome da disciplina não pode começar com números." value="{% if disciplina_edicao %}{{ disciplina_edicao.nome }}{% endif %}" required>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Carga horária</label>
+                        <div class="input-group">
+                            <input type="text" name="carga_horaria" class="form-control" placeholder="Horas" pattern="[0-9]+" inputmode="numeric" title="Insira apenas números inteiros." value="{% if disciplina_edicao %}{{ disciplina_edicao.carga_horaria }}{% endif %}" required>
+                            <span class="input-group-text bg-light text-muted">h</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Professor(a)</label>
+                        <input type="text" name="professor" class="form-control" placeholder="Nome do professor(a)" value="{% if disciplina_edicao %}{{ disciplina_edicao.professor }}{% endif %}" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Sala / Bloco</label>
+                        <input type="text" name="sala" class="form-control" placeholder="Ex: Sala 102" value="{% if disciplina_edicao %}{{ disciplina_edicao.sala }}{% endif %}" required>
+                    </div>
+
+                    <div class="col-md-1">
+                        <label class="form-label small fw-bold">Período</label>
+                        <input type="text" name="semestre" class="form-control" placeholder="2026.1" value="{% if disciplina_edicao %}{{ disciplina_edicao.semestre }}{% endif %}" required>
+                    </div>
+                    
+                    <div class="col-md-1">
+                        {% if disciplina_edicao %}
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">Salvar</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-dark w-100 fw-bold">Criar</button>
+                        {% endif %}
+                    </div>
+                </form>
+                {% if disciplina_edicao %}
+                <div class="mt-2 text-end">
+                    <a href="/disciplinas" class="small text-muted text-decoration-none">❌ Cancelar ddição</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-dark text-white py-3"><h5 class="m-0 fw-semibold">Disciplinas ofertadas</h5></div>
+            <div class="card-body bg-white p-0">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Nome da disciplina</th>
+                            <th>Carga horária</th>
+                            <th>Professor</th>
+                            <th>Sala</th>
+                            <th>Período</th>
+                            <th class="text-center pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in disciplinas %}
+                        <tr {% if disciplina_edicao and disciplina_edicao.id == d.id %}class="table-warning"{% endif %}>
+                            <td class="ps-4">{{ d.id }}</td>
+                            <td class="fw-semibold">{{ d.nome }}</td>
+                            <td>{{ d.carga_horaria }} horas</td>
+                            <td>{{ d.professor }}</td>
+                            <td><span class="badge bg-secondary">{{ d.sala }}</span></td>
+                            <td>{{ d.semestre }}</td>
+                            <td class="text-center pe-4">
+                                <a href="/disciplinas/editar/{{ d.id }}" class="btn btn-link text-primary btn-sm text-decoration-none fw-bold me-2">✏️ Editar</a>
+                                <a href="/disciplinas/deletar/{{ d.id }}" class="btn btn-link text-dark btn-sm text-decoration-none fw-bold">🗑️ Remover</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
