@@ -1,0 +1,11 @@
+USE trabalho_bd;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE Entregas;
+TRUNCATE TABLE Atividades;
+TRUNCATE TABLE Matriculas_Disciplinas;
+TRUNCATE TABLE Disciplinas;
+TRUNCATE TABLE Alunos;
+
+SET FOREIGN_KEY_CHECKS = 1;
